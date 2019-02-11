@@ -10,6 +10,7 @@ import (
     "github.com/eenblam/cryptgopals/xor"
 )
 
+// 1.1
 func TestHexToBase64(t *testing.T) {
     inputHex := "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
     expectedBase64 := "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
@@ -23,6 +24,7 @@ func TestHexToBase64(t *testing.T) {
         t.Fail()
     }
 }
+// 1.2
 func TestXORn(t *testing.T) {
     left, _ := hex.DecodeString("1c0111001f010100061a024b53535009181c")
     right, _ := hex.DecodeString("686974207468652062756c6c277320657965")
@@ -47,5 +49,20 @@ func TestXORnErrors(t *testing.T) {
     xorError := xor.XORn(c, a, b, 3)
     if xorError == nil {
         fmt.Println("No error on length mismatch")
+    }
+}
+// Related to 1.3
+func testXORByte(t *testing.T) {
+    a := []byte{0xFF, 0x00, 0x0F}
+    b := byte(0x00)
+    expected := []byte{0xFF, 0x00, 0xF0}
+    results := make([]byte, 3)
+    xorError := xor.XORByte(results, a, b, 3)
+    if xorError != nil {
+        fmt.Println(xorError)
+        t.Fail()
+    }
+    if !bytes.Equal(results, expected) {
+        fmt.Println("Output bytes do not equal expected bytes")
     }
 }
