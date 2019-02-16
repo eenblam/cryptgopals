@@ -23,9 +23,10 @@ func (r *XORResult) String() string {
 		hexString, string(r.PlainText), r.Score)
 }
 
-func isASCII(s string) bool {
-	for _, c := range s {
-		if c > 127 {
+// isASCII returns false iff a byte has its highest bit set.
+func isASCII(bytes []byte) bool {
+	for _, b := range bytes {
+		if b^128 == 128 {
 			return false
 		}
 	}
@@ -46,18 +47,15 @@ func BestXORByte(bytes []byte) (*XORResult, error) {
 		if err != nil {
 			return nil, err
 		}
-		if !isASCII(string(xord)) {
+		if !isASCII(xord) {
 			continue
 		}
 		score := freq.ChiSquared(xord)
-		//fmt.Printf("%f, %s\n", score, xord)
-		//if (score < minScore) && isASCII(string(xord)) {
 		if score < minScore {
 			minScore = score
 			copy(bestXord, xord)
 			bestByte = b
 		}
-		//fmt.Printf("%s, %s, %f\n", bestByte, bestXord, minScore)
 	}
 	result := &XORResult{bestByte, bestXord, minScore}
 	return result, nil
