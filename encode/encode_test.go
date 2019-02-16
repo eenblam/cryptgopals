@@ -1,7 +1,6 @@
 package encode
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -11,11 +10,22 @@ func TestHexToBase64(t *testing.T) {
 	expectedBase64 := "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
 	output, err := HexToBase64(inputHex)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Error(err)
 	}
 	if output != expectedBase64 {
-		fmt.Println("Output did not match expected base64")
+		t.Error("Output did not match expected base64")
 		t.Fail()
+	}
+}
+
+// Test that bad hex forces an error.
+//
+// I don't think there's a good way to force that write error,
+// without somehow preventing the process from allocating memory.
+func TestHexToBase64Failures(t *testing.T) {
+	inputHex := "AAA"
+	_, err := HexToBase64(inputHex)
+	if err == nil {
+		t.Error("Expected error but got none")
 	}
 }
