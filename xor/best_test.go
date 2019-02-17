@@ -4,6 +4,9 @@ import (
 	"encoding/hex"
 	"reflect"
 	"testing"
+
+	"github.com/eenblam/cryptgopals/encode"
+	"github.com/eenblam/cryptgopals/util"
 )
 
 // 1.3
@@ -19,5 +22,22 @@ func TestBestXORByte(t *testing.T) {
 	if !reflect.DeepEqual(result.PlainText, expected) {
 		gotString := string(result.PlainText)
 		t.Errorf("Expected %s, got %s", expectedString, gotString)
+	}
+}
+
+// 1.4
+func TestXORByteOfMany(t *testing.T) {
+	filepath := util.DataPath("data_1_4.txt")
+	rows, err := encode.LoadHexRows(filepath)
+	if err != nil {
+		t.Errorf("Could not load data from file %s: %s", filepath, err)
+	}
+	expected := []byte("Now that the party is jumping")
+	got, err := BestXORByteOfMany(rows)
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err)
+	}
+	if reflect.DeepEqual(expected, got.PlainText) {
+		t.Errorf("Expected %s, got %s", expected, got)
 	}
 }
