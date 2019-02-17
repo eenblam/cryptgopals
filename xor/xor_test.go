@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -36,17 +37,28 @@ func TestXORnErrors(t *testing.T) {
 }
 
 // Related to 1.3
-func testXORByte(t *testing.T) {
+func TestXORByte(t *testing.T) {
 	a := []byte{0xFF, 0x00, 0x0F}
 	b := byte(0x00)
-	expected := []byte{0xFF, 0x00, 0xF0}
+	expected := []byte{0xFF, 0x00, 0x0F}
 	results := make([]byte, 3)
 	xorError := XORByte(results, a, b, 3)
 	if xorError != nil {
-		fmt.Println(xorError)
-		t.Fail()
+		t.Error(xorError)
 	}
 	if !bytes.Equal(results, expected) {
-		fmt.Println("Output bytes do not equal expected bytes")
+		t.Error("Output bytes do not equal expected bytes")
+	}
+}
+
+// 1.4
+func TestXORRepeat(t *testing.T) {
+	data := []byte("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal")
+	key := []byte("ICE")
+	ciphertext := XORRepeat(data, key)
+	cipherhex := hex.EncodeToString(ciphertext)
+	expectedhex := "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"
+	if !reflect.DeepEqual(cipherhex, expectedhex) {
+		t.Errorf("Expected\n%s\nGot\n%s\n", expectedhex, cipherhex)
 	}
 }
