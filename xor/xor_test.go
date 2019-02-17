@@ -14,23 +14,18 @@ func TestXORn(t *testing.T) {
 	right, _ := hex.DecodeString("686974207468652062756c6c277320657965")
 	expected, _ := hex.DecodeString("746865206b696420646f6e277420706c6179")
 
-	n := len(left)
-	result := make([]byte, n)
-	err := XORn(result, left, right, n)
+	result, err := XORn(left, right)
 	if err != nil {
-		fmt.Println(err)
-		t.Fail()
+		t.Errorf("Unexpected error: %s", err)
 	}
 	if !bytes.Equal(result, expected) {
-		fmt.Println("Output bytes did not match expected bytes")
-		t.Fail()
+		t.Errorf("Output bytes did not match expected bytes")
 	}
 }
 func TestXORnErrors(t *testing.T) {
 	a := []byte{0xFF, 0x00, 0x0F}
 	b := []byte{0x00, 0xFF}
-	c := make([]byte, 3)
-	xorError := XORn(c, a, b, 3)
+	_, xorError := XORn(a, b)
 	if xorError == nil {
 		fmt.Println("No error on length mismatch")
 	}
@@ -41,12 +36,8 @@ func TestXORByte(t *testing.T) {
 	a := []byte{0xFF, 0x00, 0x0F}
 	b := byte(0x00)
 	expected := []byte{0xFF, 0x00, 0x0F}
-	results := make([]byte, 3)
-	xorError := XORByte(results, a, b, 3)
-	if xorError != nil {
-		t.Error(xorError)
-	}
-	if !bytes.Equal(results, expected) {
+	result := XORByte(a, b)
+	if !bytes.Equal(result, expected) {
 		t.Error("Output bytes do not equal expected bytes")
 	}
 }

@@ -1,34 +1,33 @@
 package xor
 
 import (
-	"errors"
+	"fmt"
 )
 
-// XORByte encrypts arr into dst with rolling-key XOR using the byte b.
-func XORByte(dst []byte, arr []byte, b byte, n int) error {
-	if (len(dst) != n) || (len(arr) != n) {
-		return errors.New("Length mismatch")
-	}
+// XORByte encrypts arr with rolling-key XOR using the byte b.
+func XORByte(s []byte, b byte) []byte {
+	n := len(s)
+	dst := make([]byte, n)
 	for i := 0; i < n; i++ {
-		dst[i] = arr[i] ^ b
+		dst[i] = s[i] ^ b
 	}
-	return nil
+	return dst
 }
 
-// XORn computes the bitwise XOR of a and b into dst.
+// XORn computes the bitwise XOR of a and b, returning an error if
+// their lengths don't match.
 //
 // 1.2 Fixed XOR
-func XORn(dst []byte, a []byte, b []byte, n int) error {
-	ldst := len(dst)
-	la := len(a)
-	lb := len(b)
-	if (ldst != n) || (la != n) || (lb != n) {
-		return errors.New("Length mismatch")
+func XORn(a, b []byte) ([]byte, error) {
+	la, lb := len(a), len(b)
+	if la != lb {
+		return nil, fmt.Errorf("Length mismatch: %d and %d", la, lb)
 	}
-	for i := 0; i < n; i++ {
+	dst := make([]byte, la)
+	for i := 0; i < la; i++ {
 		dst[i] = a[i] ^ b[i]
 	}
-	return nil
+	return dst, nil
 }
 
 // XORRepeat computes the

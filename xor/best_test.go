@@ -15,10 +15,7 @@ func TestBestXORByte(t *testing.T) {
 	expectedString := "Cooking MC's like a pound of bacon"
 	expected := []byte(expectedString)
 	data, _ := hex.DecodeString(s)
-	result, err := BestXORByte(data)
-	if err != nil {
-		t.Errorf("Unexpected error: %s", err)
-	}
+	result := BestXORByte(data)
 	if !reflect.DeepEqual(result.PlainText, expected) {
 		gotString := string(result.PlainText)
 		t.Errorf("Expected %s, got %s", expectedString, gotString)
@@ -33,10 +30,7 @@ func TestXORByteOfMany(t *testing.T) {
 		t.Errorf("Could not load data from file %s: %s", filepath, err)
 	}
 	expected := []byte("Now that the party is jumping")
-	got, err := BestXORByteOfMany(rows)
-	if err != nil {
-		t.Errorf("Unexpected error: %s", err)
-	}
+	got := BestXORByteOfMany(rows)
 	if reflect.DeepEqual(expected, got.PlainText) {
 		t.Errorf("Expected %s, got %s", expected, got)
 	}
