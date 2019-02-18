@@ -50,3 +50,18 @@ func FirstNHamming(s []byte, n int) (int, error) {
 	left, right := s[:n], s[n:2*n]
 	return Hamming(left, right)
 }
+
+// FirstNNormalized computes the Hamming distances of s[:n] and s[n:2n]
+// then normalizes the result by dividing by n.
+//
+// Here, n is a candidate key size.
+func FirstNNormalized(s []byte, n int) (float64, error) {
+	if n < 2 {
+		return 0, fmt.Errorf("You probably didn't mean to use only %d bits.", n)
+	}
+	distance, err := FirstNHamming(s, n)
+	if err != nil {
+		return 0, err
+	}
+	return float64(distance) / float64(n), nil
+}
