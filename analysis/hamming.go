@@ -1,6 +1,8 @@
 package analysis
 
 import (
+	"fmt"
+
 	"github.com/eenblam/cryptgopals/xor"
 )
 
@@ -37,4 +39,14 @@ func Hamming(a, b []byte) (int, error) {
 // of strings a and b.
 func HammingString(a, b string) (int, error) {
 	return Hamming([]byte(a), []byte(b))
+}
+
+// FirstNHamming computes the Hamming distances of s[:n] and s[n:2n].
+func FirstNHamming(s []byte, n int) (int, error) {
+	if 2*n > len(s) {
+		msg := "Key size (%d) can't be more than half the size of the input array (%d)"
+		return 0, fmt.Errorf(msg, n, len(s))
+	}
+	left, right := s[:n], s[n:2*n]
+	return Hamming(left, right)
 }

@@ -78,3 +78,19 @@ func TestHammingError(t *testing.T) {
 		t.Error("Expected error, but got none")
 	}
 }
+
+func TestFirstNHamming(t *testing.T) {
+	bs := []byte("this is a testwokka wokka!!!ignore this part")
+	expectedDistance := 37
+	distance, err := FirstNHamming(bs, 14)
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err)
+	}
+	if distance != expectedDistance {
+		t.Errorf("Expected %d, got %d", expectedDistance, distance)
+	}
+	_, shouldBeErr := FirstNHamming(bs, 1+(len(bs)/2))
+	if shouldBeErr == nil {
+		t.Error("Expected error, got none")
+	}
+}
