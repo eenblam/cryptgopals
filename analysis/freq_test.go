@@ -1,4 +1,4 @@
-package freq
+package analysis
 
 import (
 	"math"

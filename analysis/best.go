@@ -1,4 +1,4 @@
-package xor
+package analysis
 
 import (
 	"encoding/hex"
@@ -6,7 +6,7 @@ import (
 	"math"
 	"sort"
 
-	"github.com/eenblam/cryptgopals/freq"
+	"github.com/eenblam/cryptgopals/xor"
 )
 
 type XORResult struct {
@@ -50,11 +50,11 @@ func BestXORByte(bytes []byte) *XORResult {
 	bestByte := byte(0)
 	for i := 0; i < 256; i++ {
 		b := byte(i)
-		xord := XORByte(bytes, b)
+		xord := xor.XORByte(bytes, b)
 		if !isASCII(xord) {
 			continue
 		}
-		score := freq.ChiSquared(xord)
+		score := ChiSquared(xord)
 		if score < minScore {
 			minScore = score
 			copy(bestXord, xord)
