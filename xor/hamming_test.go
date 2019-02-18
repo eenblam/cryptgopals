@@ -23,3 +23,58 @@ func TestBitSum(t *testing.T) {
 		}
 	}
 }
+
+func TestBitSumBytes(t *testing.T) {
+	cases := []struct {
+		Input    []byte
+		Expected int
+	}{
+		{[]byte{}, 0},
+		{[]byte{0}, 0},
+		{[]byte{0, 1, 2, 3, 255}, 12},
+	}
+	for _, test := range cases {
+		got := BitSumBytes(test.Input)
+		if got != test.Expected {
+			t.Errorf("Expected %d, got %d for %s",
+				test.Expected, got, test.Input)
+		}
+	}
+}
+
+// Tests both Hamming and HammingString
+func TestHamming(t *testing.T) {
+	cases := []struct {
+		A        string
+		B        string
+		Expected int
+	}{
+		{
+			"this is a test",
+			"wokka wokka!!!",
+			37,
+		},
+		{
+			"",
+			"",
+			0,
+		},
+	}
+	for _, test := range cases {
+		got, err := HammingString(test.A, test.B)
+		if err != nil {
+			t.Errorf("Unexpected error: %s", err)
+		}
+		if got != test.Expected {
+			t.Errorf("Expected %d, got %d", test.Expected, got)
+		}
+	}
+}
+
+// Tests both Hamming and HammingString
+func TestHammingError(t *testing.T) {
+	_, err := HammingString("short", "long")
+	if err == nil {
+		t.Error("Expected error, but got none")
+	}
+}
