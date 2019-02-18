@@ -1,6 +1,8 @@
-package xor
+package analysis
 
-import ()
+import (
+	"github.com/eenblam/cryptgopals/xor"
+)
 
 // BitSum sums the bits in byte b.
 func BitSum(b byte) int {
@@ -23,8 +25,8 @@ func BitSumBytes(bs []byte) int {
 
 // Hamming computes the Hamming distance (edit distance) between a and b.
 func Hamming(a, b []byte) (int, error) {
-	// XORn handles length
-	xord, err := XORn(a, b)
+	// XORn handles length matching
+	xord, err := xor.XORn(a, b)
 	if err != nil {
 		return 0, err
 	}

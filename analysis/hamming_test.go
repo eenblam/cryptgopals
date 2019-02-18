@@ -1,4 +1,4 @@
-package xor
+package analysis
 
 import (
 	"testing"
