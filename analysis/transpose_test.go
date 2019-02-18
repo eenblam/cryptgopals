@@ -8,7 +8,6 @@ import (
 func TestTransposeBlocks(t *testing.T) {
 	data := []byte("123456789")
 	expected := []byte("147258369")
-	//expected := [][]byte([]byte("147"), []byte("258"), []byte("369"))
 	got, err := TransposeBlocks(data, 3)
 	if err != nil {
 		t.Errorf("Unexpected error: %s", err)
@@ -20,6 +19,27 @@ func TestTransposeBlocks(t *testing.T) {
 
 	_, shouldBeErr := TransposeBlocks(data, 5)
 	if shouldBeErr == nil {
-		t.Errorf("Expected error, but got none")
+		t.Error("Expected error, but got none")
+	}
+}
+
+func TestFlattenBlocks(t *testing.T) {
+	data := []byte("123456789")
+	transposed, err := TransposeBlocks(data, 3)
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err)
+	}
+	flat, err := FlattenBlocks(transposed)
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err)
+	}
+	if !bytes.Equal(flat, data) {
+		t.Errorf("Flatten(Transpose(\"%s\")) returned %s", string(data), string(flat))
+	}
+
+	badBlocks := [][]byte{[]byte("147"), []byte("25"), []byte("369")}
+	_, err = FlattenBlocks(badBlocks)
+	if err == nil {
+		t.Error("Expected error, but got none")
 	}
 }
