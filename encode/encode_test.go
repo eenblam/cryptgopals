@@ -1,7 +1,10 @@
 package encode
 
 import (
+	"fmt"
 	"testing"
+
+	"github.com/eenblam/cryptgopals/util"
 )
 
 // 1.1
@@ -28,4 +31,13 @@ func TestHexToBase64Failures(t *testing.T) {
 	if err == nil {
 		t.Error("Expected error but got none")
 	}
+}
+
+func TestLoadBase64Rows(t *testing.T) {
+	filename := util.DataPath("data_1_6.txt")
+	result, err := LoadBase64Rows(filename)
+	if err != nil {
+		t.Errorf("Could not read file %s: %s", filename, err)
+	}
+	fmt.Println("Decoded bytes read: ", len(result))
 }

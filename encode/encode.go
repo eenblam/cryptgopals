@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"io/ioutil"
 	"os"
 )
 
@@ -47,4 +48,20 @@ func LoadHexRows(filename string) ([][]byte, error) {
 		return nil, fmt.Errorf("Encountered scan error: %s", err)
 	}
 	return out, nil
+}
+
+// Read base64 rows from file, decoding them to bytes.
+func LoadBase64Rows(filename string) ([]byte, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	// Returns `&decoder{enc: enc, r: &newlineFilteringReader{r}}`
+	decoder := base64.NewDecoder(base64.StdEncoding, file)
+	decodedBytes, readErr := ioutil.ReadAll(decoder)
+	if readErr != nil {
+		return nil, fmt.Errorf("Could not decode file as base64: %s", err)
+	}
+	return decodedBytes, nil
 }
