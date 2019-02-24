@@ -1,4 +1,4 @@
-package ecb
+package cipher
 
 // Yanked from https://golang.org/src/crypto/cipher/common_test.go
 // to support ecb_aes_test.go.

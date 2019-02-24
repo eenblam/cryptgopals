@@ -1,4 +1,4 @@
-package ecb
+package cipher
 
 // Adapted from https://codereview.appspot.com/7860047/patch/23001/24001
 // which proposed adding ECB to the Go standard library.

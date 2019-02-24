@@ -1,4 +1,4 @@
-dirs=./encode ./analysis ./xor ./ecb
+dirs=./encode ./analysis ./xor ./cipher
 
 fmt:
 	gofmt -w */*.go
