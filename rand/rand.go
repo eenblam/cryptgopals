@@ -19,19 +19,26 @@ func RandKey() []byte {
 	return bs
 }
 
+// RandInt returns a random integer from [0, max).
+//
+// Keep max < 2^64.
+func RandInt(max int) int {
+	big_i, err := rand.Int(rand.Reader, big.NewInt(int64(max)))
+	if err != nil {
+		panic(err)
+	}
+	// Maybe undefined if returned value is too large,
+	// but that shouldn't happen since max is int64.
+	return int(big_i.Int64())
+}
+
 // RandChunk generates an array of rand(5,10) random bytes.
 //
 // Panics if it can't read from getrandom or urandom.
 func RandChunk() []byte {
-	// 0-5; rand.Int is right-exclusive.
-	big_i, err := rand.Int(rand.Reader, big.NewInt(6))
-	if err != nil {
-		panic(err)
-	}
-	// Shouldn't fail, since it's at most 5.
-	i := big_i.Int64()
+	i := RandInt(6)
 	bs := make([]byte, 5+i)
-	_, err = rand.Read(bs)
+	_, err := rand.Read(bs)
 	if err != nil {
 		panic(err)
 	}

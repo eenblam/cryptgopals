@@ -41,19 +41,43 @@ func GetBlockCounts(blocks [][]byte) map[string]int {
 	return counts
 }
 
+// HasRedundantBlocks returns true as soon as a block is found to have occurred
+// more than once.
+func HasRedundantBlocks(counts map[string]int) bool {
+	for _, v := range counts {
+		if v > 1 {
+			return true
+		}
+	}
+	return false
+}
+
+// GuessECB returns true if the provided bytes contain redundant blocks.
+//
+// Consistently guesses the block cipher mode used by rand.EncryptionOracle,
+// solving challenge 2.11: An ECB/CBC detection oracle.
+func GuessECB(bs []byte, blockSize int) (bool, error) {
+	blocks, err := ToBlocks(bs, blockSize)
+	if err != nil {
+		return false, err
+	}
+	counts := GetBlockCounts(blocks)
+	if HasRedundantBlocks(counts) {
+		return true, nil
+	}
+	return false, nil
+}
+
 // DetectFirstECB searches for the first ciphertext with redundant blocks
 // of blockSize, returning it if found and an error otherwise.
 func DetectFirstECB(lines [][]byte, blockSize int) ([]byte, error) {
 	for _, line := range lines {
-		blocks, err := ToBlocks(line, blockSize)
+		isECB, err := GuessECB(line, blockSize)
 		if err != nil {
 			return nil, err
 		}
-		counts := GetBlockCounts(blocks)
-		for _, v := range counts {
-			if v > 1 {
-				return line, nil
-			}
+		if isECB {
+			return line, nil
 		}
 	}
 	return nil, fmt.Errorf("No ciphertext with redundant blocks of size %d",
