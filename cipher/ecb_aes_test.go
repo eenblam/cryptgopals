@@ -86,3 +86,19 @@ func TestECB_AES(t *testing.T) {
 		}
 	}
 }
+
+func TestECBAES_EncryptDecrypt(t *testing.T) {
+	plaintext := []byte("0123456789abcdefFEDCBA9876543210")
+	key := []byte("YELLOW SUBMARINE")
+	ciphertext, err := ECBAESEncrypt(key, plaintext)
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err)
+	}
+	got, err := ECBAESDecrypt(key, ciphertext)
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err)
+	}
+	if !bytes.Equal(plaintext, got) {
+		t.Errorf("Expected %s, got %s", string(plaintext), string(got))
+	}
+}

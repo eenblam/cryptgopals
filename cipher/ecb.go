@@ -15,7 +15,11 @@ package cipher
 // See NIST SP 800-38A, pp 08-09
 
 import (
+	"crypto/aes"
 	"crypto/cipher"
+	"fmt"
+
+	"github.com/eenblam/cryptgopals/encode"
 )
 
 // Underlying data structure for Encryptor and Decryptor
@@ -82,4 +86,51 @@ func (x *ecbDecrypter) CryptBlocks(dst, src []byte) {
 		src = src[x.blockSize:]
 		dst = dst[x.blockSize:]
 	}
+}
+
+// ECBAESEncrypt encrypts the plaintext (padded with PKCS#7) with AES
+// using the provided key.
+func ECBAESEncrypt(key, plaintext []byte) ([]byte, error) {
+	//TODO require 16 bytes?
+	blockSize := len(key)
+	// Pad with PKCS 7
+	paddedPlaintext, padErr := encode.PadBytesTo(plaintext, blockSize)
+	if padErr != nil {
+		return nil, padErr
+	}
+	// Get cipher
+	c, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	// Get blockmode & encrypt
+	encrypter := NewECBEncrypter(c)
+	ciphertext := make([]byte, len(paddedPlaintext))
+	encrypter.CryptBlocks(ciphertext, paddedPlaintext)
+	return ciphertext, nil
+}
+
+// ECBAESDecrypt decrypts the ciphertext (assuming PKCS#7 padding)
+// with AES using the provided key.
+func ECBAESDecrypt(key, ciphertext []byte) ([]byte, error) {
+	blockSize := len(key)
+	if len(ciphertext)%blockSize != 0 {
+		return nil, fmt.Errorf("Key size %d does not divide ciphertext length %d",
+			blockSize, len(ciphertext))
+	}
+	// Get cipher
+	c, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	// Get blockmode & decrypt
+	decrypter := NewECBDecrypter(c)
+	paddedPlaintext := make([]byte, len(ciphertext))
+	decrypter.CryptBlocks(paddedPlaintext, ciphertext)
+	// Unad with PKCS 7
+	plaintext, padErr := encode.UnpadBytesBy(paddedPlaintext, blockSize)
+	if padErr != nil {
+		return nil, padErr
+	}
+	return plaintext, nil
 }
