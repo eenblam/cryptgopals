@@ -3,8 +3,11 @@ package cipher
 // Cipher Block Chaining (CBC) mode.
 
 import (
+	"crypto/aes"
 	"crypto/cipher"
+	"fmt"
 
+	"github.com/eenblam/cryptgopals/encode"
 	"github.com/eenblam/cryptgopals/xor"
 )
 
@@ -87,4 +90,59 @@ func (x *cbcDecrypter) CryptBlocks(dst, src []byte) {
 		src = src[x.blockSize:]
 		dst = dst[x.blockSize:]
 	}
+}
+
+// CBCAESEncrypt encrypts the plaintext (padded with PKCS#7) with AES
+// using the provided IV and key.
+func CBCAESEncrypt(key, iv, plaintext []byte) ([]byte, error) {
+	//TODO require 16 bytes?
+	blockSize := len(key)
+	if len(iv) != blockSize {
+		return nil, fmt.Errorf("IV length %d does not match key length %d",
+			len(iv), blockSize)
+	}
+	// Pad with PKCS 7
+	paddedPlaintext, padErr := encode.PadBytesTo(plaintext, blockSize)
+	if padErr != nil {
+		return nil, padErr
+	}
+	// Get cipher
+	c, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	// Get blockmode & encrypt
+	encrypter := NewCBCEncrypter(c, iv)
+	ciphertext := make([]byte, len(paddedPlaintext))
+	encrypter.CryptBlocks(ciphertext, paddedPlaintext)
+	return ciphertext, nil
+}
+
+// CBCAESDecrypt decrypts the ciphertext (assuming PKCS#7 padding)
+// with AES using the provided IV and key.
+func CBCAESDecrypt(key, iv, ciphertext []byte) ([]byte, error) {
+	blockSize := len(key)
+	if len(iv) != blockSize {
+		return nil, fmt.Errorf("IV length %d does not match key length %d",
+			len(iv), blockSize)
+	}
+	if len(ciphertext)%blockSize != 0 {
+		return nil, fmt.Errorf("Key size %d does not divide ciphertext length %d",
+			blockSize, len(ciphertext))
+	}
+	// Get cipher
+	c, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
+	// Get blockmode & decrypt
+	decrypter := NewCBCDecrypter(c, iv)
+	paddedPlaintext := make([]byte, len(ciphertext))
+	decrypter.CryptBlocks(paddedPlaintext, ciphertext)
+	// Unad with PKCS 7
+	plaintext, padErr := encode.UnpadBytesBy(paddedPlaintext, blockSize)
+	if padErr != nil {
+		return nil, padErr
+	}
+	return plaintext, nil
 }
