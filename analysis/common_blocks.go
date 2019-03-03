@@ -12,8 +12,8 @@ import (
 func ToBlocks(bs []byte, blockSize int) ([][]byte, error) {
 	numBytes := len(bs)
 	if numBytes%blockSize != 0 {
-		return nil, fmt.Errorf("Expected block size %d, got %d. Padding needing.",
-			blockSize, numBytes)
+		return nil, fmt.Errorf("Found %d bytes; not divisible by block size %d. Padding needing.",
+			numBytes, blockSize)
 	}
 	numBlocks := numBytes / blockSize
 	blocks := make([][]byte, numBlocks)
